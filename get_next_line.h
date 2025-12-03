@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: equentin <equentin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/20 08:46:14 by equentin          #+#    #+#             */
-/*   Updated: 2025/11/26 08:31:45 by equentin         ###   ########.fr       */
+/*   Created: 2025/11/26 15:27:41 by equentin          #+#    #+#             */
+/*   Updated: 2025/12/03 11:07:47 by equentin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,15 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 512
 # endif
-
-# define MAX_FD 1024
-
-char	*ft_strchr(const char *s, int c);
-char	*ft_substr(char const *s, size_t len);
-char	*allocate_new_buffer(char *old_buf);
+# ifndef MAX_FD
+#  define MAX_FD 1024
+# endif
+/* utils */
 size_t	ft_strlen(char *str);
+char	*ft_strchrnl(char *s);
+char	*ft_strjoin(char *s1, char *s2, char *max);
+void	ft_strmove(char *str, char *nl);
+
 char	*get_next_line(int fd);
 
 #endif

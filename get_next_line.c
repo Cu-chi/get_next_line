@@ -5,66 +5,61 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: equentin <equentin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/20 08:46:19 by equentin          #+#    #+#             */
-/*   Updated: 2025/11/26 09:40:12 by equentin         ###   ########.fr       */
+/*   Created: 2025/11/26 15:27:37 by equentin          #+#    #+#             */
+/*   Updated: 2025/12/03 11:14:37 by equentin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
 
-static char	*remove_line_from_buffer(char **buffer, size_t line_len)
+char	*get_next_line(int fd)
 {
-	char			*new_buf;
-	const size_t	old_buf_len = ft_strlen(*buffer);
-	size_t			i;
+	static char	buffer[BUFFER_SIZE + 1] = {0};
+	char		*line;
+	char		*nl;
+	ssize_t		bytes_read;
 
-	new_buf = (char *)malloc(sizeof(char) * (old_buf_len - line_len + 1));
-	if (new_buf == NULL)
+	if (BUFFER_SIZE <= 0 || fd < 0 || fd >= MAX_FD)
+		return (NULL);
+	nl = ft_strchrnl(buffer);
+	if (nl)
 	{
-		free(*buffer);
-		*buffer = NULL;
-		return (NULL);
+		line = ft_strjoin(NULL, buffer, nl);
+		ft_strmove(buffer, nl + 1);
+		return (line);
 	}
-	i = 0;
-	while (i < old_buf_len - line_len)
+	line = ft_strjoin(NULL, buffer, 0);
+	if (!line)
+		return (NULL);
+	bytes_read = 1;
+	while (bytes_read > 0)
 	{
-		new_buf[i] = (*buffer)[line_len + i + 1];
-		i++;
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read > 0)
+		{
+			buffer[bytes_read] = 0;
+			nl = ft_strchrnl(buffer);
+			if (nl)
+			{
+				line = ft_strjoin(line, buffer, nl);
+				ft_strmove(buffer, nl + 1);
+				return (line);
+			}
+			line = ft_strjoin(line, buffer, 0);
+			if (!line)
+				return (NULL);
+		}
+		if (bytes_read == -1)
+		{
+			buffer[0] = 0;
+			if (line)
+				free(line);
+			return (NULL);
+		}
 	}
-	new_buf[i] = '\0';
-	free(*buffer);
-	return (new_buf);
-}
-
-static char	*get_end_line_no_nl(char **buffer)
-{
-	char	*line;
-	size_t	buf_len;
-
-	buf_len = ft_strlen(*buffer);
-	if (buf_len == 0)
-		return (NULL);
-	line = ft_substr(*buffer, buf_len);
-	free(*buffer);
-	*buffer = NULL;
-	return (line);
-}
-
-static char	*get_line_in_buffer(char **buffer, int fd_end)
-{
-	char	*line;
-	char	*nl;
-
-	nl = ft_strchr(*buffer, '\n');
-	if (fd_end && !nl)
-		return (get_end_line_no_nl(buffer));
-	if (!nl)
-		return (NULL);
-	line = ft_substr(*buffer, nl - *buffer + 1);
-	if (line == NULL)
-		return (NULL);
-	*buffer = remove_line_from_buffer(buffer, nl - *buffer);
-	if (*buffer == NULL)
+	buffer[0] = 0;
+	if (line[0] == 0)
 	{
 		free(line);
 		return (NULL);
@@ -72,69 +67,17 @@ static char	*get_line_in_buffer(char **buffer, int fd_end)
 	return (line);
 }
 
-static char	*last_line(ssize_t bytes_read, char **buffer)
+#include <fcntl.h>
+#include <stdio.h>
+
+int	main(int ac, char **av)
 {
-	char	*line;
-
-	if (bytes_read == 0)
-	{
-		line = get_line_in_buffer(&(*buffer), 1);
-		if (line)
-			return (line);
-	}
-	free(*buffer);
-	*buffer = NULL;
-	return (NULL);
+	int	fd;
+	(void)ac;
+	(void)av;
+	fd = open("a", O_RDONLY);
+	char *l = get_next_line(fd);
+	printf("%s", l);
+	free(l);
+	return (0);
 }
-
-char	*get_next_line(int fd)
-{
-	static char	*buffer = NULL;
-	char		*line;
-	ssize_t		bytes_read;
-	size_t		i_buffer;
-
-	buffer = allocate_new_buffer(buffer);
-	if (buffer == NULL || fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	i_buffer = ft_strlen(buffer);
-	bytes_read = read(fd, &buffer[i_buffer], BUFFER_SIZE);
-	while (bytes_read > 0)
-	{
-		buffer[i_buffer + bytes_read] = '\0';
-		line = get_line_in_buffer(&buffer, 0);
-		if (line)
-			return (line);
-		buffer = allocate_new_buffer(buffer);
-		if (buffer == NULL)
-			return (NULL);
-		i_buffer = ft_strlen(buffer);
-		bytes_read = read(fd, &buffer[i_buffer], BUFFER_SIZE);
-	}
-	return (last_line(bytes_read, &buffer));
-}
-
-// #include <fcntl.h>
-// #include <stdio.h>
-// int	main(int ac, char **av)
-// {
-// 	int		fd;
-// 	char	*l;
-
-// 	(void)ac;
-// 	(void)av;
-// 	fd = open("tr", O_RDONLY);
-// 	l = get_next_line(fd);
-// 	printf("'%s'", l);
-// 	l = get_next_line(fd);
-// 	printf("'%s'", l);
-
-// 	if (l)
-// 	{
-// 		printf("'%s'", l);
-// 		free(l);
-// 	}
-// 	else
-// 		printf("NONO\n");
-// 	return (0);
-// }
