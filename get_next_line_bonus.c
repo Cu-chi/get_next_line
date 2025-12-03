@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: equentin <equentin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 15:27:37 by equentin          #+#    #+#             */
-/*   Updated: 2025/12/03 12:47:53 by equentin         ###   ########.fr       */
+/*   Updated: 2025/12/03 12:47:19 by equentin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_read_loop(int fd, char *line, char *buffer)
 {
@@ -43,20 +43,20 @@ char	*ft_read_loop(int fd, char *line, char *buffer)
 
 char	*get_next_line(int fd)
 {
-	static char	buffer[BUFFER_SIZE + 1] = {0};
+	static char	buffer[MAX_FD][BUFFER_SIZE + 1] = {0};
 	char		*line;
 	char		*nl;
 
 	if (BUFFER_SIZE <= 0 || fd < 0 || fd >= MAX_FD)
 		return (NULL);
-	nl = ft_strchrnl(buffer);
-	line = ft_strjoin(NULL, buffer, nl);
+	nl = ft_strchrnl(buffer[fd]);
+	line = ft_strjoin(NULL, buffer[fd], nl);
 	if (!line)
 		return (NULL);
 	if (nl)
 	{
-		ft_strmove(buffer, nl + 1);
+		ft_strmove(buffer[fd], nl + 1);
 		return (line);
 	}
-	return (ft_read_loop(fd, line, buffer));
+	return (ft_read_loop(fd, line, buffer[fd]));
 }
