@@ -6,7 +6,7 @@
 /*   By: equentin <equentin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 15:27:41 by equentin          #+#    #+#             */
-/*   Updated: 2025/12/04 10:29:03 by equentin         ###   ########.fr       */
+/*   Updated: 2025/12/04 10:40:30 by equentin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@
 size_t	ft_strlen(char *str);
 char	*ft_strchrnl(char *s);
 char	*ft_strjoin(char *s1, char *s2);
-void	ft_strmove(char *str, char *nl);
 
 char	*get_next_line(int fd);
 
