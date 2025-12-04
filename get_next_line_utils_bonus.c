@@ -6,7 +6,7 @@
 /*   By: equentin <equentin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 15:27:29 by equentin          #+#    #+#             */
-/*   Updated: 2025/12/03 12:41:42 by equentin         ###   ########.fr       */
+/*   Updated: 2025/12/04 10:30:24 by equentin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ size_t	ft_strlen(char *str)
 
 char	*ft_strchrnl(char *s)
 {
+	if (!s)
+		return (NULL);
 	while (*s)
 	{
 		if (*s == '\n')
@@ -38,54 +40,35 @@ char	*ft_strchrnl(char *s)
 	return (NULL);
 }
 
-void	ft_freejoin(char *s1)
+static void	*join_free(char *s1)
 {
-	if (s1)
-		free(s1);
+	free(s1);
+	return (NULL);
 }
 
-char	*ft_strjoin(char *s1, char *s2, char *max)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	size_t	i;
-	size_t	len_s2;
-	char	*join;
+	char	*str;
 
-	if (max)
-		len_s2 = (max - s2) + 1;
-	else
-		len_s2 = ft_strlen(s2);
-	join = malloc(sizeof(char) * (ft_strlen(s1) + len_s2 + 1));
-	if (join == NULL)
+	if (!s1)
 	{
-		ft_freejoin(s1);
+		s1 = malloc(sizeof(char));
+		if (!s1)
+			return (NULL);
+		s1[0] = '\0';
+	}
+	if (!s1 || !s2)
 		return (NULL);
-	}
-	i = 0;
-	while (s1 && s1[i])
-	{
-		join[i] = s1[i];
-		i++;
-	}
-	while (len_s2--)
-		join[i++] = *s2++;
-	join[i] = 0;
-	ft_freejoin(s1);
-	return (join);
-}
-
-void	ft_strmove(char *str, char *nl)
-{
-	const size_t	delta = nl - str;
-	size_t			i;
-	size_t			len;
-
-	len = ft_strlen(str);
-	i = 0;
-	while (str[i + delta])
-	{
-		str[i] = str[i + delta];
-		i++;
-	}
-	while (i < len)
-		str[i++] = 0;
+	str = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!str)
+		return (join_free(s1));
+	i = -1;
+	while (s1[++i])
+		str[i] = s1[i];
+	while (*s2)
+		str[i++] = *s2++;
+	str[i] = '\0';
+	free(s1);
+	return (str);
 }
