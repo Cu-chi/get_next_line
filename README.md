@@ -52,11 +52,5 @@ int main(void)
     return (0);
 }
 ```
-#### 🧪 Testing
-This project has been tested with various buffer sizes (1, 42, 9999, 10000000) and passes strict memory leak checks (Valgrind).  
-  
-**Valgrind**: No memory leaks. (still reachable when we don't read all the file)  
-**Timeout**: Passes strict timeout tests.  
-**Static Variable**: Properly managed between calls.  
 
 *Note: A linked list approach could offer better scalability for huge buffers.*
