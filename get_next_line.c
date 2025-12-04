@@ -6,120 +6,57 @@
 /*   By: equentin <equentin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 15:27:37 by equentin          #+#    #+#             */
-/*   Updated: 2025/12/04 10:32:00 by equentin         ###   ########.fr       */
+/*   Updated: 2025/12/03 12:47:53 by equentin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static void	*gnl_free(char *stash, char *buffer)
+char	*ft_read_loop(int fd, char *line, char *buffer)
 {
-	if (stash)
-		free(stash);
-	if (buffer)
-		free(buffer);
-	return (NULL);
-}
-
-static char	*gnl_read(int fd, char *stash)
-{
-	char	*buffer;
 	ssize_t	bytes_read;
+	char	*nl;
 
-	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!buffer)
-		return (gnl_free(stash, buffer));
-	bytes_read = 1;
-	while (!ft_strchrnl(stash) && bytes_read != 0)
+	bytes_read = read(fd, buffer, BUFFER_SIZE);
+	while (bytes_read > 0)
 	{
-		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read == -1)
-			return (gnl_free(stash, buffer));
-		buffer[bytes_read] = '\0';
-		if (bytes_read > 0)
+		buffer[bytes_read] = 0;
+		nl = ft_strchrnl(buffer);
+		line = ft_strjoin(line, buffer, nl);
+		if (!line)
+			return (NULL);
+		if (nl)
 		{
-			stash = ft_strjoin(stash, buffer);
-			if (!stash)
-				return (gnl_free(stash, buffer));
+			ft_strmove(buffer, nl + 1);
+			return (line);
 		}
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
-	free(buffer);
-	return (stash);
-}
-
-static char	*gnl_get_line(char *stash)
-{
-	size_t	i;
-	char	*line;
-
-	i = 0;
-	if (!stash[i])
-		return (NULL);
-	while (stash[i] && stash[i] != '\n')
-		i++;
-	if (stash[i] == '\n')
-		i++;
-	line = malloc(sizeof(char) * (i + 1));
-	if (!line)
-		return (NULL);
-	i = 0;
-	while (stash[i] && stash[i] != '\n')
+	buffer[0] = 0;
+	if (bytes_read == -1 || line[0] == 0)
 	{
-		line[i] = stash[i];
-		i++;
+		free(line);
+		return (NULL);
 	}
-	if (stash[i] == '\n')
-		line[i++] = '\n';
-	line[i] = '\0';
 	return (line);
-}
-
-static char	*gnl_new_stash(char *stash)
-{
-	char	*new_stash;
-	size_t	i;
-	size_t	j;
-
-	i = 0;
-	while (stash[i] && stash[i] != '\n')
-		i++;
-	if (!stash[i])
-	{
-		free(stash);
-		return (NULL);
-	}
-	new_stash = malloc(sizeof(char) * (ft_strlen(stash) - i + 1));
-	if (!new_stash)
-	{
-		free(stash);
-		return (NULL);
-	}
-	i++;
-	j = 0;
-	while (stash[i])
-		new_stash[j++] = stash[i++];
-	new_stash[j] = '\0';
-	free(stash);
-	return (new_stash);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stash;
+	static char	buffer[BUFFER_SIZE + 1] = {0};
 	char		*line;
+	char		*nl;
 
-	if (BUFFER_SIZE <= 0 || fd < 0 || fd >= MAX_FD || MAX_FD < 0)
+	if (BUFFER_SIZE <= 0 || fd < 0 || fd >= MAX_FD)
 		return (NULL);
-	stash = gnl_read(fd, stash);
-	if (!stash)
-		return (NULL);
-	line = gnl_get_line(stash);
+	nl = ft_strchrnl(buffer);
+	line = ft_strjoin(NULL, buffer, nl);
 	if (!line)
-	{
-		free(stash);
-		stash = NULL;
 		return (NULL);
+	if (nl)
+	{
+		ft_strmove(buffer, nl + 1);
+		return (line);
 	}
-	stash = gnl_new_stash(stash);
-	return (line);
+	return (ft_read_loop(fd, line, buffer));
 }
