@@ -6,7 +6,7 @@
 /*   By: equentin <equentin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 15:27:41 by equentin          #+#    #+#             */
-/*   Updated: 2025/12/03 11:07:47 by equentin         ###   ########.fr       */
+/*   Updated: 2026/01/16 13:25:30 by equentin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@
 #  define MAX_FD 1024
 # endif
 /* utils */
-size_t	ft_strlen(char *str);
-char	*ft_strchrnl(char *s);
-char	*ft_strjoin(char *s1, char *s2, char *max);
-void	ft_strmove(char *str, char *nl);
+size_t	gnl_ft_strlen(char *str);
+char	*gnl_ft_strchrnl(char *s);
+char	*gnl_ft_strjoin(char *s1, char *s2, char *max);
+void	gnl_ft_strmove(char *str, char *nl);
 
 char	*get_next_line(int fd);
 

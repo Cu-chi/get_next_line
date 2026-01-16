@@ -6,7 +6,7 @@
 /*   By: equentin <equentin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/26 15:27:37 by equentin          #+#    #+#             */
-/*   Updated: 2025/12/03 12:47:53 by equentin         ###   ########.fr       */
+/*   Updated: 2026/01/16 13:26:42 by equentin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,13 @@ char	*ft_read_loop(int fd, char *line, char *buffer)
 	while (bytes_read > 0)
 	{
 		buffer[bytes_read] = 0;
-		nl = ft_strchrnl(buffer);
-		line = ft_strjoin(line, buffer, nl);
+		nl = gnl_ft_strchrnl(buffer);
+		line = gnl_ft_strjoin(line, buffer, nl);
 		if (!line)
 			return (NULL);
 		if (nl)
 		{
-			ft_strmove(buffer, nl + 1);
+			gnl_ft_strmove(buffer, nl + 1);
 			return (line);
 		}
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
@@ -49,13 +49,13 @@ char	*get_next_line(int fd)
 
 	if (BUFFER_SIZE <= 0 || fd < 0 || fd >= MAX_FD)
 		return (NULL);
-	nl = ft_strchrnl(buffer);
-	line = ft_strjoin(NULL, buffer, nl);
+	nl = gnl_ft_strchrnl(buffer);
+	line = gnl_ft_strjoin(NULL, buffer, nl);
 	if (!line)
 		return (NULL);
 	if (nl)
 	{
-		ft_strmove(buffer, nl + 1);
+		gnl_ft_strmove(buffer, nl + 1);
 		return (line);
 	}
 	return (ft_read_loop(fd, line, buffer));
